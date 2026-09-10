@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vento Motorcycles U.S.A. — Pipeline Fill Dashboard</title>
+<link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+<!-- ======================= HEADER ======================= -->
+<header class="topbar">
+  <div class="brand">
+    <img id="brandLogo" class="brand-logo" src="" alt="Vento Motorcycles U.S.A.">
+    <div id="brandLogoFallback" class="brand-logo-fallback hidden">VENTO</div>
+    <div class="brand-titles">
+      <h1>PIPELINE FILL DASHBOARD</h1>
+      <div class="sub">INVENTARIO · FORECAST · CUMPLIMIENTO · DOH · CAPACIDAD</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-meta">
+      <div id="canalActivo">Vista consolidada — todos los canales</div>
+      <div id="ultimaActualizacion" class="mono">—</div>
+    </div>
+        <button class="btn btn-ghost btn-icon-label" id="btnCargarBase"><span class="btn-full-text">CARGAR NUEVA BASE</span><span class="btn-short-text">CARGAR</span></button>
+    <button class="btn btn-ghost btn-icon-label" id="btnDescargarExcel"><span class="btn-full-text">DESCARGAR BASE EN EXCEL</span><span class="btn-short-text"></span></button>
+    <button class="btn btn-solid btn-icon-label" id="btnActualizarHora"><span class="btn-full-text">ACTUALIZAR</span><span class="btn-short-text">↻</span></button>
+  </div>
+</header>
+
+<!-- ======================= FILTER BAR ======================= -->
+<div class="filterbar">
+  <div class="filterbar-row1">
+    <div class="canal-tabs">
+      <button class="btn btn-sm canal-tab active" data-canal="TODAS" style="border:none;">Todas</button>
+      <button class="btn btn-sm canal-tab" data-canal="E-COMMERCE" style="border:none;">E-Commerce</button>
+      <button class="btn btn-sm canal-tab" data-canal="DISTRIBUIDORES" style="border:none;">Distribuidores</button>
+    </div>
+    <button class="btn btn-ghost btn-sm" id="btnToggleFiltros">Filtros <span id="filtrosChevron">▾</span></button>
+  </div>
+  <div class="filterbar-fields" id="filterFieldsWrap">
+    <div class="field"><label>Modelo</label><select id="filtroModelo"></select></div>
+    <div class="field"><label>Modelo Agrupado</label><select id="filtroModeloAgrupado"></select></div>
+    <div class="field"><label>Semana</label><select id="filtroSemana"><option value="TODAS">Todas</option></select></div>
+    <div class="field"><label>Estatus</label><select id="filtroEstatus"></select></div>
+    <div class="field search-box"><label>Buscar modelo</label><input type="text" id="buscarModelo" placeholder="Ej. Alpina 300"></div>
+    <div class="btn-row"><button class="btn btn-ghost" id="btnLimpiarFiltros">Limpiar filtros</button></div>
+  </div>
+</div>
+
+<main>
+ <div id="validationNotice" class="card hidden" style="border-color:var(--color-warning); background:var(--color-warning-bg); margin-bottom:20px; font-size:12.5px;"></div>
+  
+  <!-- CAPACIDAD DE INVENTARIO -->
+  <div class="section-title">Capacidad de Inventario</div>
+  <div class="grid-3">
+    <div class="card gauge-card">
+      <canvas id="gaugeEcommerce"></canvas>
+      <div id="gaugeEcommerceText"></div>
+      <div class="gauge-label">E-Commerce</div>
+    </div>
+    <div class="card gauge-card">
+      <canvas id="gaugeDistribuidores"></canvas>
+      <div id="gaugeDistribuidoresText"></div>
+      <div class="gauge-label">Distribuidores</div>
+    </div>
+    <div class="card gauge-card">
+      <canvas id="gaugeTotal"></canvas>
+      <div id="gaugeTotalText"></div>
+      <div class="gauge-label"><span class="" data-tip="Porcentaje de utilización de la capacidad disponible."></span></div>
+  </div>
+<div class="gauge-label"><span class="" data-tip="Porcentaje de utilización de la capacidad disponible."></span></div>
+    </div>
+  </div>
+
+  <!-- KPIs PRINCIPALES -->
+  <div class="kpi-grid">
+    <div class="card">
+      <div class="kpi-label">Forecast <span class="" data-tip="Demanda o requerimiento esperado para el periodo."></span></div>
+      <div class="kpi-value mono" id="kpiForecast">0</div>
+    </div>
+    <div class="card">
+      <div class="kpi-label">Pedido Revisado <span class="" data-tip="Cantidad solicitada/asignada después de la revisión."></span></div>
+      <div class="kpi-value mono" id="kpiPedido">0</div>
+    </div>
+    <div class="card">
+      <div class="kpi-label">Inventario Cumplido <span class="" data-tip="Cantidad que realmente fue cubierta."></span></div>
+      <div class="kpi-value mono" id="kpiCumplido">0</div>
+    </div>
+    <div class="card">
+      <div class="kpi-label">Pendiente por Entregar <span class="" data-tip="Pedido Revisado − Inventario Cumplido"></span></div>
+      <div class="kpi-value mono" id="kpiPendiente">0</div>
+    </div>
+  </div>
+
+  <div class="grid-3" style="margin-top:14px;">
+    <div class="card">
+      <div class="kpi-label">Traslado Completado</div>
+      <div class="kpi-value mono" id="kpiTraslado">0</div>
+    </div>
+    <div class="card">
+      <div class="kpi-label">Inventario Total Proyectado <span class="" data-tip="Total proyectado de la temporada por modelo (columna \'Inventario Total Proyectado\' de la base)."></span></div>
+      <div class="kpi-value mono" id="kpiInventarioTotalProyectado">0</div>
+      <div class="kpi-foot" id="kpiPctAvancePipeline">Pedido Revisado: 0% del total proyectado</div>
+    </div>
+    <div class="card" id="kpiPctCumplimientoCard">
+      <div class="kpi-label">% Cumplimiento <span class="" data-tip="Inventario Cumplido / Pedido Revisado."></span></div>
+      <div class="kpi-value mono" id="kpiPctCumplimiento">0</div>
+      <div class="progress-track" style="margin-top:10px;"><div class="progress-fill" id="kpiPctCumplimientoBarra" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- FORECAST VS PEDIDO -->
+  <div class="section-title">Forecast vs Pedido Revisado</div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="progress-row"><span>FORECAST: <b class="mono" id="fcForecastVal">0</b></span><span>PEDIDO REVISADO: <b class="mono" id="fcPedidoVal">0</b></span></div>
+      <div class="progress-track"><div class="progress-fill" id="fcBarra" style="width:0%"></div></div>
+      <div class="progress-row"><span>Cobertura del Forecast</span><span class="mono" id="fcPctVal">0%</span></div>
+    </div>
+
+    <div class="card">
+      <div class="kpi-label">Cumplimiento del Pedido</div>
+      <div class="progress-row" style="margin-top:10px;"><span>PEDIDO: <b class="mono" id="cmpPedido">0</b></span><span>CUMPLIDO: <b class="mono" id="cmpCumplido">0</b></span></div>
+      <div class="progress-track"><div class="progress-fill" id="cmpBarra" style="width:0%"></div></div>
+      <div class="progress-row"><span>PENDIENTE: <b class="mono" id="cmpPendiente">0</b></span><span>% CUMPLIMIENTO: <b class="mono" id="cmpPct">0%</b></span></div>
+    </div>
+  </div>
+
+  <!-- CUMPLIMIENTO SEMANAL: PROYECTADO VS CUMPLIDO -->
+  <div class="section-title">Inventario Proyectado vs Cumplido por Semana</div>
+  <p class="section-note" id="weeklyProjectionNote">
+    La base actual no incluye la columna "Inventario Proyectado Por Semana". Cuando se agregue, esta sección calculará
+    automáticamente el % de cumplimiento semanal y acumulado; mientras tanto se marca como <b>SIN PROYECCIÓN</b> y se
+    muestra únicamente el inventario realmente cumplido (columnas de semana 37, 38, 39, 40...).
+  </p>
+  <div class="table-wrap">
+    <table id="tablaSemanal">
+      <thead><tr><th>Semana</th><th class="num">Proyectado</th><th class="num">Cumplido</th><th class="num">Pendiente</th><th class="num">% Cumplimiento</th><th class="num">% Acumulado</th><th>Ritmo</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="chart-card" style="margin-top:16px;">
+    <div class="chart-head"><h3>Proyectado vs Cumplido (barras) y % Acumulado (línea)</h3></div>
+    <canvas id="chartSemanal"></canvas>
+  </div>
+
+  <div class="card" id="cumplimientoAcumuladoCard" style="margin-top:16px;">
+    <div class="kpi-label">Cumplimiento Acumulado</div>
+    <div class="kpi-value" id="acumPctVal">0%</div>
+    <div class="kpi-foot" id="acumProyectado">Proyectado acumulado: 0</div>
+    <div class="kpi-foot" id="acumCumplido">Cumplido acumulado: 0</div>
+    <div class="kpi-foot" id="acumPendiente">Pendiente: 0</div>
+  </div>
+
+  <!-- MODELOS PENDIENTES -->
+  <div class="section-title">Modelos Pendientes por Entregar</div>
+  <div class="chart-card">
+    <div class="chart-head">
+      <h3>Mayor a menor pendiente</h3>
+      <select class="mini-select" id="selTopPendientes">
+        <option value="5">Top 5</option><option value="10" selected>Top 10</option><option value="ALL">Todos</option>
+      </select>
+    </div>
+    <canvas id="chartPendientes"></canvas>
+  </div>
+  <div class="table-wrap" style="margin-top:14px; max-height:400px;">
+    <table id="tablaPendientes">
+      <thead><tr><th>Modelo</th><th>Unidad</th><th class="num">Pedido Revisado</th><th class="num">Cumplido</th><th class="num">Pendiente</th><th class="num">% Cumplimiento</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- RESUMEN DOH -->
+  <div class="section-title">DOH — Días de Inventario <span class="" data-tip="Days on Hand: días de inventario disponibles de acuerdo con el ritmo de venta."></span></div>
+  <div class="grid-4">
+    <div class="card" id="resDOH_NORMAL"><div class="kpi-label">Normal (1–45 días)</div><div class="kpi-value rd-count">0</div><div class="kpi-foot rd-pct">0%</div></div>
+    <div class="card" id="resDOH_ALERTA"><div class="kpi-label">Alerta (46–59 días)</div><div class="kpi-value rd-count">0</div><div class="kpi-foot rd-pct">0%</div></div>
+    <div class="card" id="resDOH_CRTICO"><div class="kpi-label">Crítico (60+ días)</div><div class="kpi-value rd-count">0</div><div class="kpi-foot rd-pct">0%</div></div>
+    <div class="card" id="resDOH_SINCOBERTURA"><div class="kpi-label">Sin Cobertura (0 días)</div><div class="kpi-value rd-count">0</div><div class="kpi-foot rd-pct">0%</div></div>
+  </div>
+
+  <div class="table-wrap" style="margin-top:16px; max-height:440px;">
+    <table id="tablaDOH">
+      <thead><tr><th>Modelo</th><th>Unidad</th><th class="num">Inventario</th><th class="num">Ventas</th><th class="num">Pro Venta Mensual</th><th class="num">DOH Actual</th><th>Estado</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- MATRIZ EJECUTIVA -->
+  <div class="section-title">Matriz Ejecutiva</div>
+  <div class="table-wrap" style="max-height:460px;">
+    <table id="tablaMatriz">
+      <thead><tr>
+        <th data-sort="modelo">Modelo</th><th>Unidad</th>
+        <th class="num" data-sort="forecast">Forecast</th><th class="num" data-sort="pedidoRevisado">Pedido Rev.</th>
+        <th class="num" data-sort="inventarioCumplido">Cumplido</th><th class="num" data-sort="pendienteCalc">Pendiente</th>
+        <th class="num">% vs Forecast</th><th class="num">% Cumplimiento</th>
+        <th class="num" data-sort="doh">DOH</th><th>Estatus</th><th>Estado</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- ALERTAS -->
+  <div class="section-title">Alertas</div>
+  <div class="list-box" id="listaAlertas"></div>
+
+  <!-- RESUMEN EJECUTIVO 
+  <div class="section-title">Resumen Ejecutivo</div>
+  <div class="resumen-box" id="resumenEjecutivo"></div> -->
+
+</main>
+
+<footer>Vento Motorcycles U.S.A. — Pipeline Fill Dashboard · Datos consolidados desde base.csv</footer>
+
+<!-- ======================= MODAL DE SEGURIDAD ======================= -->
+<div class="modal-overlay hidden" id="passwordModal">
+  <div class="modal-box">
+    <h3>Actualizar base de datos</h3>
+    <p class="muted">Introduce la contraseña para actualizar los datos.</p>
+    <div class="field">
+      <label>Contraseña</label>
+      <input type="password" id="passwordInput" autocomplete="off">
+    </div>
+    <div class="modal-error" id="passwordError">Contraseña incorrecta. No se puede actualizar la base.</div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="btnPasswordCancelar">Cancelar</button>
+      <button class="btn btn-solid" id="btnPasswordContinuar">Continuar</button>
+    </div>
+  </div>
+</div>
+<input type="file" id="inputArchivoCSV" accept=".csv" class="visually-hidden">
+
+<!-- Chart.js vía CDN (permitido explícitamente para gráficas, sección 2 y 38) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<!-- SheetJS vía CDN, sólo para generar el Excel de descarga -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/calculations.js"></script>
+<script src="js/filters.js"></script>
+<script src="js/security.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
