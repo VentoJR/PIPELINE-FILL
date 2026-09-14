@@ -15,7 +15,7 @@ const CONFIG = {
 
   // Contraseña para actualizar/reemplazar la base de datos.
   // Cámbiala aquí cuando lo necesites (ver README.md, "Cómo cambiar la contraseña").
-  UPDATE_PASSWORD: "123",
+  UPDATE_PASSWORD: "2012",
 
   // Capacidad de almacenamiento por unidad de negocio (unidades de inventario).
   CAPACITY_ECOMMERCE: 1300,
