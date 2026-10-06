@@ -70,9 +70,6 @@ function applyLoadResult(result, sourceLabel) {
   // Si hay 1 o 0 periodos, resetear el filtro a TODOS
   if (APP_STATE.forecastPeriodsAvailable.length <= 1) {
     FilterState.forecastPeriodo = "TODOS";
-  } else if (APP_STATE.forecastPeriodsAvailable.length > 1) {
-    // Si hay 2+ periodos, seleccionar el primero por defecto (no dejar en TODOS)
-    FilterState.forecastPeriodo = APP_STATE.forecastPeriodsAvailable[0];
   }
 
   refreshDynamicFilterOptions(APP_STATE.data, APP_STATE.weeksAvailable);
@@ -115,12 +112,6 @@ function wireFilters() {
   document.getElementById("filtroForecastPeriodo").addEventListener("change", e => {
     FilterState.forecastPeriodo = e.target.value;
     // Actualizar valores de forecast según el periodo seleccionado
-<<<<<<< HEAD
-    if (FilterState.forecastPeriodo !== "TODOS" && APP_STATE.forecastColumnsAvailable.length > 1) {
-      APP_STATE.data.forEach(r => {
-        if (r.forecasts) {
-          r.forecast = r.forecasts[FilterState.forecastPeriodo] || 0;
-=======
     if (APP_STATE.forecastColumnsAvailable.length > 1) {
       APP_STATE.data.forEach(r => {
         if (r.forecasts) {
@@ -131,7 +122,6 @@ function wireFilters() {
             // Solo el periodo seleccionado
             r.forecast = r.forecasts[FilterState.forecastPeriodo] || 0;
           }
->>>>>>> e86ced5 (Fix: filtro de Forecast con múltiples columnas FC)
         }
       });
     }
@@ -146,12 +136,11 @@ function wireFilters() {
 
 function handleClearFilters() {
   resetFilters();
-  // Resetear valores de forecast al periodo default (primera columna FC)
-  if (APP_STATE.forecastColumnsAvailable.length > 1 && APP_STATE.forecastPeriodsAvailable.length > 0) {
-    const defaultPeriod = APP_STATE.forecastPeriodsAvailable[0];
+  // Resetear valores de forecast al periodo default (sumar todos)
+  if (APP_STATE.forecastColumnsAvailable.length > 1) {
     APP_STATE.data.forEach(r => {
       if (r.forecasts) {
-        r.forecast = r.forecasts[defaultPeriod] || 0;
+        r.forecast = Object.values(r.forecasts).reduce((a, v) => a + v, 0);
       }
     });
   }
@@ -185,6 +174,19 @@ function wireSortableHeaders() {
       SORT_MATRIZ = { field, dir };
       updateDashboard();
     });
+  });
+}
+
+/* ---------------------------------------------------------------------- */
+function wireSecurityUI() {
+  document.getElementById("btnCargarBase").addEventListener("click", () => {
+    openPasswordModal(() => document.getElementById("inputArchivoCSV").click());
+  });
+  document.getElementById("btnPasswordContinuar").addEventListener("click", submitPassword);
+  document.getElementById("btnPasswordCancelar").addEventListener("click", closePasswordModal);
+  document.getElementById("passwordInput").addEventListener("keydown", e => {
+    if (e.key === "Enter") submitPassword();
+    if (e.key === "Escape") closePasswordModal();
   });
 }
 
