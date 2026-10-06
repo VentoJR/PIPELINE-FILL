@@ -10,12 +10,11 @@ let CURRENT_WEEKLY_ROWS = []; // se guarda para poder abrir el detalle de semana
 function updateDashboard() {
   let filtered = applyFilters(APP_STATE.data);
 
-  // Si hay 2+ Forecast y está en "Todos", NO se suman automáticamente
-  // (regla explícita): se bloquea el análisis y se pide elegir uno.
+  // Si hay 2+ Forecast y está en "TODAS", se suman todos los periodos.
+  // Si selecciona un periodo específico, se muestra solo ese.
   const periodos = APP_STATE.forecastPeriodsAvailable || [];
-  const necesitaSeleccion = periodos.length > 1 && FilterState.forecastPeriodo === "TODOS";
-  document.getElementById("forecastGuardNotice").classList.toggle("hidden", !necesitaSeleccion);
-  if (necesitaSeleccion) filtered = [];
+  const aviso = document.getElementById("forecastGuardNotice");
+  if (aviso) aviso.classList.add("hidden");
 
   const weeklyRows = calculateWeeklyFulfillment(filtered, APP_STATE.weeksAvailable, APP_STATE.tieneProyeccionSemanal);
   CURRENT_WEEKLY_ROWS = weeklyRows;

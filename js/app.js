@@ -115,10 +115,23 @@ function wireFilters() {
   document.getElementById("filtroForecastPeriodo").addEventListener("change", e => {
     FilterState.forecastPeriodo = e.target.value;
     // Actualizar valores de forecast según el periodo seleccionado
+<<<<<<< HEAD
     if (FilterState.forecastPeriodo !== "TODOS" && APP_STATE.forecastColumnsAvailable.length > 1) {
       APP_STATE.data.forEach(r => {
         if (r.forecasts) {
           r.forecast = r.forecasts[FilterState.forecastPeriodo] || 0;
+=======
+    if (APP_STATE.forecastColumnsAvailable.length > 1) {
+      APP_STATE.data.forEach(r => {
+        if (r.forecasts) {
+          if (FilterState.forecastPeriodo === "TODOS") {
+            // Sumar todos los periodos FC
+            r.forecast = Object.values(r.forecasts).reduce((a, v) => a + v, 0);
+          } else {
+            // Solo el periodo seleccionado
+            r.forecast = r.forecasts[FilterState.forecastPeriodo] || 0;
+          }
+>>>>>>> e86ced5 (Fix: filtro de Forecast con múltiples columnas FC)
         }
       });
     }
