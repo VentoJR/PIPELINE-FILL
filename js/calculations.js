@@ -46,7 +46,13 @@ const CONFIG = {
   CAP_GOOD_MAX: 0.70,     // 0-70%  => verde
   CAP_WARNING_MAX: 0.90,  // 70-90% => amarillo; 90-100% => rojo; >100% => SOBRECARGA
 };
+const capacidad = document.getElementById("capacidadEcommerce");
 
+// Mostrar los gauges
+capacidad.style.display = "grid";
+
+// Ocultar cuando corresponda
+// capacidad.style.display = "none";
 /* ----------------------------------------------------------------------
    FORMATO
    ---------------------------------------------------------------------- */
