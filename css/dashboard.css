@@ -236,6 +236,12 @@ td.muted { color: var(--color-text-muted); }
   width: 220px; white-space: normal; z-index: 100; box-shadow: var(--shadow-hover);
 }
 
+/* Espacio entre la fila de indicadores y la fila inferior */
+#capacidadGeneral,
+#capacidadEcommerce {
+  margin-bottom: 16px;
+}
+
 /* ============================================================================
    MODAL (seguridad de actualización)
    ============================================================================ */
