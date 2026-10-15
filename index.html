@@ -75,19 +75,25 @@
     </div>
     <div class="gauge-label"><span class=" " data-tip="Porcentaje de utilización de la capacidad disponible."></span></div>
   </div>
-  <!-- Vista al filtrar por E-COMMERCE: un gauge por almacén -->
-  <div id="capacidadEcommerce" class="grid-2 hidden" style="grid-template-columns:1fr 1fr;">
-    <div class="card gauge-card">
-      <canvas id="gaugeAlmacen60"></canvas>
-      <div id="gaugeAlmacen60Text"></div>
-      <div class="gauge-label">Almacén 60.3</div>
-    </div>
-    <div class="card gauge-card">
-      <canvas id="gaugeAlmacen17"></canvas>
-      <div id="gaugeAlmacen17Text"></div>
-      <div class="gauge-label">Almacén 17.7</div>
-    </div>
+ 
+<!-- Vista al filtrar por E-COMMERCE: un gauge por almacén -->
+<div
+  id="capacidadEcommerce"
+  class="grid-2 hidden"
+  style="grid-template-columns: 1fr 1fr; margin-bottom: 24px;"
+>
+  <div class="card gauge-card">
+    <canvas id="gaugeAlmacen60"></canvas>
+    <div id="gaugeAlmacen60Text"></div>
+    <div class="gauge-label">Almacén 60.3</div>
   </div>
+
+  <div class="card gauge-card">
+    <canvas id="gaugeAlmacen17"></canvas>
+    <div id="gaugeAlmacen17Text"></div>
+    <div class="gauge-label">Almacén 17.7</div>
+  </div>
+</div>
 
   <!-- KPIs PRINCIPALES -->
   <div class="kpi-grid cols-3">
