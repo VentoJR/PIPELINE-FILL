@@ -104,72 +104,21 @@ function renderGauge(canvasId, capacityObj) {
   const remaining = Math.max(100 - filled - overflow, 0);
   const color = gaugeColor(capacityObj.level);
 
- 
-function renderGauge(canvasId, capacityObj) {
-  destroyChart(canvasId);
-
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
-
-  const ctx = canvas.getContext("2d");
-
-  const pct = capacityObj.pct === null
-    ? 0
-    : Math.min(capacityObj.pct, 1.2);
-
-  const filled = Math.min(pct, 1) * 100;
-  const overflow = Math.max(pct - 1, 0) * 100;
-  const remaining = Math.max(100 - filled, 0);
-  const color = gaugeColor(capacityObj.level);
-
   chartInstances[canvasId] = new Chart(ctx, {
     type: "doughnut",
-
     data: {
       datasets: [{
         data: [filled, overflow, remaining],
-        backgroundColor: [
-          color,
-          CH.danger,
-          GAUGE_TRACK
-        ],
+        backgroundColor: [color, CH.danger, GAUGE_TRACK],
         borderWidth: 0,
-        hoverOffset: 0
-      }]
+      }],
     },
-
     options: {
-      circumference: 180,
-      rotation: 270,
-      cutout: "72%",
-
-      responsive: true,
-      maintainAspectRatio: false,
-
-      layout: {
-        padding: {
-          top: 4,
-          right: 4,
-          bottom: 0,
-          left: 4
-        }
-      },
-
-      plugins: {
-        legend: {
-          display: false
-        },
-        tooltip: {
-          enabled: false
-        }
-      },
-
-      animation: {
-        duration: 250
-      }
-    }
+      circumference: 180, rotation: 270, cutout: "72%",
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { enabled: false } },
+    },
   });
-});
 }
 
 function renderAllGauges(capacity) {
