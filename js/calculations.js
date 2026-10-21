@@ -24,7 +24,7 @@ const CONFIG = {
   SHEET_REFRESH_MINUTES: 5,   // 0 = sin actualización automática
 
   // Capacidad de almacenamiento por unidad de negocio (unidades de inventario).
-  CAPACITY_ECOMMERCE: 1300,
+  CAPACITY_ECOMMERCE: 2900,
   CAPACITY_DISTRIBUIDORES: 3000,
   // Capacidad por almacén de E-COMMERCE (vista al filtrar por E-COMMERCE).
   CAPACITY_ALMACEN_60_3: 1600,
