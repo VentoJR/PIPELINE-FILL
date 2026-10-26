@@ -24,11 +24,11 @@ const CONFIG = {
   SHEET_REFRESH_MINUTES: 5,   // 0 = sin actualización automática
 
   // Capacidad de almacenamiento por unidad de negocio (unidades de inventario).
-  CAPACITY_ECOMMERCE: 2900,
-  CAPACITY_DISTRIBUIDORES: 3000,
+  CAPACITY_ECOMMERCE: 5600,
+  CAPACITY_DISTRIBUIDORES: 5000,
   // Capacidad por almacén de E-COMMERCE (vista al filtrar por E-COMMERCE).
   CAPACITY_ALMACEN_60_3: 1600,
-  CAPACITY_ALMACEN_17_7: 1300,
+  CAPACITY_ALMACEN_17_7: 4000,
   get CAPACITY_TOTAL() { return this.CAPACITY_ECOMMERCE + this.CAPACITY_DISTRIBUIDORES; },
 
   // Clasificación de DOH (Days on Hand) — SOLO valor actual, sin histórico.
